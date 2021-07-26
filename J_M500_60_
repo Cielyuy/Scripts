@@ -1,0 +1,822 @@
+;Read case
+/file/read-case F:\FangZhen\basic_Mesh\Model_500.msh
+
+; set save
+;;/file/auto-save/data-frequency 2000
+;;/file/auto-save/case-frequency each-time
+;;/file/autosave/root-name "30du.msh.gz"
+
+;delete mesh interface
+;/define/mesh-interface/delete contact_region
+
+/define/operating-conditions/gravity/y 0 -9.8 0
+
+;scale
+;;/mesh/scale 0.125 0.125 0.125
+
+;general
+
+/define/operating-conditions? y 0.0 -9.8 0.0
+
+/define/models steady? y
+
+;define viscous model
+
+/define/models/viscous/ke-rng? y   ;;swirl?
+/define/models/viscous/rng-swirl-model? yes
+
+
+;/define/models/viscous/ke-rng-swirl-model? y
+;/define/models/viscous/ke-rng/rng-swirl-model? y
+
+
+;/define/models/viscous/ke-realizable? y            
+
+
+; modify boundary-condition types
+
+;/define/boundary-conditions/zone-type contact_region-src wall
+;/define/boundary-conditions/zone-type contact_region-trg wall
+/define/boundary-conditions/zone-type i1 velocity-inlet
+/define/boundary-conditions/zone-type i2 velocity-inlet
+
+/define/boundary-conditions/zone-type o1 pressure-outlet
+/define/boundary-conditions/zone-type p1 pressure-outlet
+/define/boundary-conditions/zone-type p2 pressure-outlet
+
+;set inlet boundary-conditions
+/define/boundary-conditions/velocity-inlet i2  n n y y n 10 n 0 n n y 5 10
+/define/boundary-conditions/velocity-inlet i1  n n y y n 50 n 0 n n y 5 10
+/define/boundary-conditions/pressure-outlet o1  y n -1800 n y n n y 5 10 y n n n
+/define/boundary-conditions/pressure-outlet p1  y n 0 n y n n y 5 10 y n n n 
+/define/boundary-conditions/pressure-outlet p2  y n 0 n y n n y 5 10 y n n n 
+
+;;;;n y y n 0 y n 51.96 n 30 n 0 y n 1 n 1
+;/define/boundary-conditions/copy-bc inlet front ()
+;/define/boundary-conditions/wall lj y motion-bc-moving n n n n 11.11 1 0 0 n n 0 n 0.5
+
+; set solution controls
+;/solve/set/p-v-coupling 21
+;20: SIMPLE
+;21: SIMPLEC
+;22: PISO
+;24: coupled
+;/solve/set/under-relaxation pressure 0.5
+;/solve/set/under-relaxation density 0.8
+;/solve/set/under-relaxation body-force  0.8
+;/solve/set/under-relaxation mom 0.5
+;/solve/set/under-relaxation turb-viscosity 0.6
+;/solve/set/under-relaxation k 0.6
+;/solve/set/under-relaxation epsilon 0.6
+;/solve/set/under-relaxation body-force 0.8 turb-viscosity 0.8 density 0.8
+;/solve/set/discretization-scheme pressure 10 mom 1 k 1 epsilon 1
+
+;set pressure
+;10:standard
+;11:linear
+;12:second order
+;13:body force weighted
+;14:presto!
+
+;set mom
+;0:firdst order upwind
+;1:second order upwind
+;2:power law
+;4:quick
+;6:third-order muscl
+
+;set k
+;0:firdst order upwind
+;1:second order upwind
+;2:power law
+;4:quick
+;6:third-order muscl
+
+;set epdst order upwind
+;1:second order upwind
+;2:power law
+;4:silon
+;0:firquick
+;6:third-order muscl
+
+;set monitor residuals
+/solve/monitors/residual/convergence-criteria 0.000001 0.000001 0.000001 0.000001 0.000001 0.000001
+
+;set force monitors
+;compile C
+;/define/user-defined/compiled-functions/compile libudf yes FandMmonitor.c "" "" 
+; load C
+;/define/user-defined/compiled-functions/load libudf
+;;    set hook
+;/define/user-defined/function-hooks/execute-at-end "force_and_moment_print::libudf" "" 
+
+;/solve/monitors/force/set-drag-monitor cx y che1 zxj1 zxj2 che2 zxj3 zxj4 che3 zxj5 zxj6 () n y "cx-CRH380A" n y 1 0 0
+;/solve/monitors/force/set-drag-monitor cy y che1 zxj1 zxj2 che2 zxj3 zxj4 che3 zxj5 zxj6 () n y "cy-1D-30" n y 0 1 0
+;/solve/monitors/force/set-drag-monitor cz y che1 zxj1 zxj2 che2 zxj3 zxj4 che3 zxj5 zxj6 () n y "cz-CRH380A" n y 0 0 1
+
+;/solve/monitors/force/set-moment-monitor mx y che1 zxj1 zxj2 fd1 che2 zxj3 zxj4 fd2 che3 zxj5 zxj6 () n y "mx-1D-30" n y 0 0 0 1 0 0
+;/solve/monitors/force/set-moment-monitor my y che1 zxj1 zxj2 fd1 che2 zxj3 zxj4 fd2 che3 zxj5 zxj6 () n y "my-1D-30" n y 0 0 0 0 1 0
+;/solve/monitors/force/set-moment-monitor mz y che1 zxj1 zxj2 fd1 che2 zxj3 zxj4 fd2 che3 zxj5 zxj6 () n y "mz-1D-30" n y 0 0 0 0 0 1
+
+
+;init solve set
+/solve/initialize/reference-frame absolute
+/solve/initialize/initialize-flow
+;solve/set/time-step 0.00005
+/solve/iterate 500
+;solve/set/time-step 0.00005
+;solve/set/data-sampling y 1 y y
+;solve/dual-time-iterate 6000 50
+
+; set save
+
+;/file/autosave/root-name "Me_317"
+/file/write-case-data "F:\FangZhen\0712\FluentData_M500_50_1800.cas"
+;/display/save-picture "F:\FangZhen\0712\FluentData_M500_50_1800jpg"
+/exit/close-fluent
+
+;Read case
+/file/read-case F:\FangZhen\basic_Mesh\Model_500.msh
+
+; set save
+;;/file/auto-save/data-frequency 2000
+;;/file/auto-save/case-frequency each-time
+;;/file/autosave/root-name "30du.msh.gz"
+
+;delete mesh interface
+;/define/mesh-interface/delete contact_region
+
+/define/operating-conditions/gravity/y 0 -9.8 0
+
+;scale
+;;/mesh/scale 0.125 0.125 0.125
+
+;general
+
+/define/operating-conditions? y 0.0 -9.8 0.0
+
+/define/models steady? y
+
+;define viscous model
+
+/define/models/viscous/ke-rng? y   ;;swirl?
+/define/models/viscous/rng-swirl-model? yes
+
+
+;/define/models/viscous/ke-rng-swirl-model? y
+;/define/models/viscous/ke-rng/rng-swirl-model? y
+
+
+;/define/models/viscous/ke-realizable? y            
+
+
+; modify boundary-condition types
+
+;/define/boundary-conditions/zone-type contact_region-src wall
+;/define/boundary-conditions/zone-type contact_region-trg wall
+/define/boundary-conditions/zone-type i1 velocity-inlet
+/define/boundary-conditions/zone-type i2 velocity-inlet
+
+/define/boundary-conditions/zone-type o1 pressure-outlet
+/define/boundary-conditions/zone-type p1 pressure-outlet
+/define/boundary-conditions/zone-type p2 pressure-outlet
+
+;set inlet boundary-conditions
+/define/boundary-conditions/velocity-inlet i2  n n y y n 10 n 0 n n y 5 10
+/define/boundary-conditions/velocity-inlet i1  n n y y n 52 n 0 n n y 5 10
+/define/boundary-conditions/pressure-outlet o1  y n -1800 n y n n y 5 10 y n n n
+/define/boundary-conditions/pressure-outlet p1  y n 0 n y n n y 5 10 y n n n 
+/define/boundary-conditions/pressure-outlet p2  y n 0 n y n n y 5 10 y n n n 
+
+;;;;n y y n 0 y n 51.96 n 30 n 0 y n 1 n 1
+;/define/boundary-conditions/copy-bc inlet front ()
+;/define/boundary-conditions/wall lj y motion-bc-moving n n n n 11.11 1 0 0 n n 0 n 0.5
+
+; set solution controls
+;/solve/set/p-v-coupling 21
+;20: SIMPLE
+;21: SIMPLEC
+;22: PISO
+;24: coupled
+;/solve/set/under-relaxation pressure 0.5
+;/solve/set/under-relaxation density 0.8
+;/solve/set/under-relaxation body-force  0.8
+;/solve/set/under-relaxation mom 0.5
+;/solve/set/under-relaxation turb-viscosity 0.6
+;/solve/set/under-relaxation k 0.6
+;/solve/set/under-relaxation epsilon 0.6
+;/solve/set/under-relaxation body-force 0.8 turb-viscosity 0.8 density 0.8
+;/solve/set/discretization-scheme pressure 10 mom 1 k 1 epsilon 1
+
+;set pressure
+;10:standard
+;11:linear
+;12:second order
+;13:body force weighted
+;14:presto!
+
+;set mom
+;0:firdst order upwind
+;1:second order upwind
+;2:power law
+;4:quick
+;6:third-order muscl
+
+;set k
+;0:firdst order upwind
+;1:second order upwind
+;2:power law
+;4:quick
+;6:third-order muscl
+
+;set epdst order upwind
+;1:second order upwind
+;2:power law
+;4:silon
+;0:firquick
+;6:third-order muscl
+
+;set monitor residuals
+/solve/monitors/residual/convergence-criteria 0.000001 0.000001 0.000001 0.000001 0.000001 0.000001
+
+;set force monitors
+;compile C
+;/define/user-defined/compiled-functions/compile libudf yes FandMmonitor.c "" "" 
+; load C
+;/define/user-defined/compiled-functions/load libudf
+;;    set hook
+;/define/user-defined/function-hooks/execute-at-end "force_and_moment_print::libudf" "" 
+
+;/solve/monitors/force/set-drag-monitor cx y che1 zxj1 zxj2 che2 zxj3 zxj4 che3 zxj5 zxj6 () n y "cx-CRH380A" n y 1 0 0
+;/solve/monitors/force/set-drag-monitor cy y che1 zxj1 zxj2 che2 zxj3 zxj4 che3 zxj5 zxj6 () n y "cy-1D-30" n y 0 1 0
+;/solve/monitors/force/set-drag-monitor cz y che1 zxj1 zxj2 che2 zxj3 zxj4 che3 zxj5 zxj6 () n y "cz-CRH380A" n y 0 0 1
+
+;/solve/monitors/force/set-moment-monitor mx y che1 zxj1 zxj2 fd1 che2 zxj3 zxj4 fd2 che3 zxj5 zxj6 () n y "mx-1D-30" n y 0 0 0 1 0 0
+;/solve/monitors/force/set-moment-monitor my y che1 zxj1 zxj2 fd1 che2 zxj3 zxj4 fd2 che3 zxj5 zxj6 () n y "my-1D-30" n y 0 0 0 0 1 0
+;/solve/monitors/force/set-moment-monitor mz y che1 zxj1 zxj2 fd1 che2 zxj3 zxj4 fd2 che3 zxj5 zxj6 () n y "mz-1D-30" n y 0 0 0 0 0 1
+
+
+;init solve set
+/solve/initialize/reference-frame absolute
+/solve/initialize/initialize-flow
+;solve/set/time-step 0.00005
+/solve/iterate 500
+;solve/set/time-step 0.00005
+;solve/set/data-sampling y 1 y y
+;solve/dual-time-iterate 6000 50
+
+; set save
+
+;/file/autosave/root-name "Me_317"
+/file/write-case-data "F:\FangZhen\0712\FluentData_M500_52_1800.cas"
+;/display/save-picture "F:\FangZhen\0712\FluentData_M500_52_1800jpg"
+/exit/close-fluent
+
+;Read case
+/file/read-case F:\FangZhen\basic_Mesh\Model_500.msh
+
+; set save
+;;/file/auto-save/data-frequency 2000
+;;/file/auto-save/case-frequency each-time
+;;/file/autosave/root-name "30du.msh.gz"
+
+;delete mesh interface
+;/define/mesh-interface/delete contact_region
+
+/define/operating-conditions/gravity/y 0 -9.8 0
+
+;scale
+;;/mesh/scale 0.125 0.125 0.125
+
+;general
+
+/define/operating-conditions? y 0.0 -9.8 0.0
+
+/define/models steady? y
+
+;define viscous model
+
+/define/models/viscous/ke-rng? y   ;;swirl?
+/define/models/viscous/rng-swirl-model? yes
+
+
+;/define/models/viscous/ke-rng-swirl-model? y
+;/define/models/viscous/ke-rng/rng-swirl-model? y
+
+
+;/define/models/viscous/ke-realizable? y            
+
+
+; modify boundary-condition types
+
+;/define/boundary-conditions/zone-type contact_region-src wall
+;/define/boundary-conditions/zone-type contact_region-trg wall
+/define/boundary-conditions/zone-type i1 velocity-inlet
+/define/boundary-conditions/zone-type i2 velocity-inlet
+
+/define/boundary-conditions/zone-type o1 pressure-outlet
+/define/boundary-conditions/zone-type p1 pressure-outlet
+/define/boundary-conditions/zone-type p2 pressure-outlet
+
+;set inlet boundary-conditions
+/define/boundary-conditions/velocity-inlet i2  n n y y n 10 n 0 n n y 5 10
+/define/boundary-conditions/velocity-inlet i1  n n y y n 54 n 0 n n y 5 10
+/define/boundary-conditions/pressure-outlet o1  y n -1800 n y n n y 5 10 y n n n
+/define/boundary-conditions/pressure-outlet p1  y n 0 n y n n y 5 10 y n n n 
+/define/boundary-conditions/pressure-outlet p2  y n 0 n y n n y 5 10 y n n n 
+
+;;;;n y y n 0 y n 51.96 n 30 n 0 y n 1 n 1
+;/define/boundary-conditions/copy-bc inlet front ()
+;/define/boundary-conditions/wall lj y motion-bc-moving n n n n 11.11 1 0 0 n n 0 n 0.5
+
+; set solution controls
+;/solve/set/p-v-coupling 21
+;20: SIMPLE
+;21: SIMPLEC
+;22: PISO
+;24: coupled
+;/solve/set/under-relaxation pressure 0.5
+;/solve/set/under-relaxation density 0.8
+;/solve/set/under-relaxation body-force  0.8
+;/solve/set/under-relaxation mom 0.5
+;/solve/set/under-relaxation turb-viscosity 0.6
+;/solve/set/under-relaxation k 0.6
+;/solve/set/under-relaxation epsilon 0.6
+;/solve/set/under-relaxation body-force 0.8 turb-viscosity 0.8 density 0.8
+;/solve/set/discretization-scheme pressure 10 mom 1 k 1 epsilon 1
+
+;set pressure
+;10:standard
+;11:linear
+;12:second order
+;13:body force weighted
+;14:presto!
+
+;set mom
+;0:firdst order upwind
+;1:second order upwind
+;2:power law
+;4:quick
+;6:third-order muscl
+
+;set k
+;0:firdst order upwind
+;1:second order upwind
+;2:power law
+;4:quick
+;6:third-order muscl
+
+;set epdst order upwind
+;1:second order upwind
+;2:power law
+;4:silon
+;0:firquick
+;6:third-order muscl
+
+;set monitor residuals
+/solve/monitors/residual/convergence-criteria 0.000001 0.000001 0.000001 0.000001 0.000001 0.000001
+
+;set force monitors
+;compile C
+;/define/user-defined/compiled-functions/compile libudf yes FandMmonitor.c "" "" 
+; load C
+;/define/user-defined/compiled-functions/load libudf
+;;    set hook
+;/define/user-defined/function-hooks/execute-at-end "force_and_moment_print::libudf" "" 
+
+;/solve/monitors/force/set-drag-monitor cx y che1 zxj1 zxj2 che2 zxj3 zxj4 che3 zxj5 zxj6 () n y "cx-CRH380A" n y 1 0 0
+;/solve/monitors/force/set-drag-monitor cy y che1 zxj1 zxj2 che2 zxj3 zxj4 che3 zxj5 zxj6 () n y "cy-1D-30" n y 0 1 0
+;/solve/monitors/force/set-drag-monitor cz y che1 zxj1 zxj2 che2 zxj3 zxj4 che3 zxj5 zxj6 () n y "cz-CRH380A" n y 0 0 1
+
+;/solve/monitors/force/set-moment-monitor mx y che1 zxj1 zxj2 fd1 che2 zxj3 zxj4 fd2 che3 zxj5 zxj6 () n y "mx-1D-30" n y 0 0 0 1 0 0
+;/solve/monitors/force/set-moment-monitor my y che1 zxj1 zxj2 fd1 che2 zxj3 zxj4 fd2 che3 zxj5 zxj6 () n y "my-1D-30" n y 0 0 0 0 1 0
+;/solve/monitors/force/set-moment-monitor mz y che1 zxj1 zxj2 fd1 che2 zxj3 zxj4 fd2 che3 zxj5 zxj6 () n y "mz-1D-30" n y 0 0 0 0 0 1
+
+
+;init solve set
+/solve/initialize/reference-frame absolute
+/solve/initialize/initialize-flow
+;solve/set/time-step 0.00005
+/solve/iterate 500
+;solve/set/time-step 0.00005
+;solve/set/data-sampling y 1 y y
+;solve/dual-time-iterate 6000 50
+
+; set save
+
+;/file/autosave/root-name "Me_317"
+/file/write-case-data "F:\FangZhen\0712\FluentData_M500_54_1800.cas"
+;/display/save-picture "F:\FangZhen\0712\FluentData_M500_54_1800jpg"
+/exit/close-fluent
+
+;Read case
+/file/read-case F:\FangZhen\basic_Mesh\Model_500.msh
+
+; set save
+;;/file/auto-save/data-frequency 2000
+;;/file/auto-save/case-frequency each-time
+;;/file/autosave/root-name "30du.msh.gz"
+
+;delete mesh interface
+;/define/mesh-interface/delete contact_region
+
+/define/operating-conditions/gravity/y 0 -9.8 0
+
+;scale
+;;/mesh/scale 0.125 0.125 0.125
+
+;general
+
+/define/operating-conditions? y 0.0 -9.8 0.0
+
+/define/models steady? y
+
+;define viscous model
+
+/define/models/viscous/ke-rng? y   ;;swirl?
+/define/models/viscous/rng-swirl-model? yes
+
+
+;/define/models/viscous/ke-rng-swirl-model? y
+;/define/models/viscous/ke-rng/rng-swirl-model? y
+
+
+;/define/models/viscous/ke-realizable? y            
+
+
+; modify boundary-condition types
+
+;/define/boundary-conditions/zone-type contact_region-src wall
+;/define/boundary-conditions/zone-type contact_region-trg wall
+/define/boundary-conditions/zone-type i1 velocity-inlet
+/define/boundary-conditions/zone-type i2 velocity-inlet
+
+/define/boundary-conditions/zone-type o1 pressure-outlet
+/define/boundary-conditions/zone-type p1 pressure-outlet
+/define/boundary-conditions/zone-type p2 pressure-outlet
+
+;set inlet boundary-conditions
+/define/boundary-conditions/velocity-inlet i2  n n y y n 10 n 0 n n y 5 10
+/define/boundary-conditions/velocity-inlet i1  n n y y n 56 n 0 n n y 5 10
+/define/boundary-conditions/pressure-outlet o1  y n -1800 n y n n y 5 10 y n n n
+/define/boundary-conditions/pressure-outlet p1  y n 0 n y n n y 5 10 y n n n 
+/define/boundary-conditions/pressure-outlet p2  y n 0 n y n n y 5 10 y n n n 
+
+;;;;n y y n 0 y n 51.96 n 30 n 0 y n 1 n 1
+;/define/boundary-conditions/copy-bc inlet front ()
+;/define/boundary-conditions/wall lj y motion-bc-moving n n n n 11.11 1 0 0 n n 0 n 0.5
+
+; set solution controls
+;/solve/set/p-v-coupling 21
+;20: SIMPLE
+;21: SIMPLEC
+;22: PISO
+;24: coupled
+;/solve/set/under-relaxation pressure 0.5
+;/solve/set/under-relaxation density 0.8
+;/solve/set/under-relaxation body-force  0.8
+;/solve/set/under-relaxation mom 0.5
+;/solve/set/under-relaxation turb-viscosity 0.6
+;/solve/set/under-relaxation k 0.6
+;/solve/set/under-relaxation epsilon 0.6
+;/solve/set/under-relaxation body-force 0.8 turb-viscosity 0.8 density 0.8
+;/solve/set/discretization-scheme pressure 10 mom 1 k 1 epsilon 1
+
+;set pressure
+;10:standard
+;11:linear
+;12:second order
+;13:body force weighted
+;14:presto!
+
+;set mom
+;0:firdst order upwind
+;1:second order upwind
+;2:power law
+;4:quick
+;6:third-order muscl
+
+;set k
+;0:firdst order upwind
+;1:second order upwind
+;2:power law
+;4:quick
+;6:third-order muscl
+
+;set epdst order upwind
+;1:second order upwind
+;2:power law
+;4:silon
+;0:firquick
+;6:third-order muscl
+
+;set monitor residuals
+/solve/monitors/residual/convergence-criteria 0.000001 0.000001 0.000001 0.000001 0.000001 0.000001
+
+;set force monitors
+;compile C
+;/define/user-defined/compiled-functions/compile libudf yes FandMmonitor.c "" "" 
+; load C
+;/define/user-defined/compiled-functions/load libudf
+;;    set hook
+;/define/user-defined/function-hooks/execute-at-end "force_and_moment_print::libudf" "" 
+
+;/solve/monitors/force/set-drag-monitor cx y che1 zxj1 zxj2 che2 zxj3 zxj4 che3 zxj5 zxj6 () n y "cx-CRH380A" n y 1 0 0
+;/solve/monitors/force/set-drag-monitor cy y che1 zxj1 zxj2 che2 zxj3 zxj4 che3 zxj5 zxj6 () n y "cy-1D-30" n y 0 1 0
+;/solve/monitors/force/set-drag-monitor cz y che1 zxj1 zxj2 che2 zxj3 zxj4 che3 zxj5 zxj6 () n y "cz-CRH380A" n y 0 0 1
+
+;/solve/monitors/force/set-moment-monitor mx y che1 zxj1 zxj2 fd1 che2 zxj3 zxj4 fd2 che3 zxj5 zxj6 () n y "mx-1D-30" n y 0 0 0 1 0 0
+;/solve/monitors/force/set-moment-monitor my y che1 zxj1 zxj2 fd1 che2 zxj3 zxj4 fd2 che3 zxj5 zxj6 () n y "my-1D-30" n y 0 0 0 0 1 0
+;/solve/monitors/force/set-moment-monitor mz y che1 zxj1 zxj2 fd1 che2 zxj3 zxj4 fd2 che3 zxj5 zxj6 () n y "mz-1D-30" n y 0 0 0 0 0 1
+
+
+;init solve set
+/solve/initialize/reference-frame absolute
+/solve/initialize/initialize-flow
+;solve/set/time-step 0.00005
+/solve/iterate 500
+;solve/set/time-step 0.00005
+;solve/set/data-sampling y 1 y y
+;solve/dual-time-iterate 6000 50
+
+; set save
+
+;/file/autosave/root-name "Me_317"
+/file/write-case-data "F:\FangZhen\0712\FluentData_M500_56_1800.cas"
+;/display/save-picture "F:\FangZhen\0712\FluentData_M500_56_1800jpg"
+/exit/close-fluent
+
+;Read case
+/file/read-case F:\FangZhen\basic_Mesh\Model_500.msh
+
+; set save
+;;/file/auto-save/data-frequency 2000
+;;/file/auto-save/case-frequency each-time
+;;/file/autosave/root-name "30du.msh.gz"
+
+;delete mesh interface
+;/define/mesh-interface/delete contact_region
+
+/define/operating-conditions/gravity/y 0 -9.8 0
+
+;scale
+;;/mesh/scale 0.125 0.125 0.125
+
+;general
+
+/define/operating-conditions? y 0.0 -9.8 0.0
+
+/define/models steady? y
+
+;define viscous model
+
+/define/models/viscous/ke-rng? y   ;;swirl?
+/define/models/viscous/rng-swirl-model? yes
+
+
+;/define/models/viscous/ke-rng-swirl-model? y
+;/define/models/viscous/ke-rng/rng-swirl-model? y
+
+
+;/define/models/viscous/ke-realizable? y            
+
+
+; modify boundary-condition types
+
+;/define/boundary-conditions/zone-type contact_region-src wall
+;/define/boundary-conditions/zone-type contact_region-trg wall
+/define/boundary-conditions/zone-type i1 velocity-inlet
+/define/boundary-conditions/zone-type i2 velocity-inlet
+
+/define/boundary-conditions/zone-type o1 pressure-outlet
+/define/boundary-conditions/zone-type p1 pressure-outlet
+/define/boundary-conditions/zone-type p2 pressure-outlet
+
+;set inlet boundary-conditions
+/define/boundary-conditions/velocity-inlet i2  n n y y n 10 n 0 n n y 5 10
+/define/boundary-conditions/velocity-inlet i1  n n y y n 58 n 0 n n y 5 10
+/define/boundary-conditions/pressure-outlet o1  y n -1800 n y n n y 5 10 y n n n
+/define/boundary-conditions/pressure-outlet p1  y n 0 n y n n y 5 10 y n n n 
+/define/boundary-conditions/pressure-outlet p2  y n 0 n y n n y 5 10 y n n n 
+
+;;;;n y y n 0 y n 51.96 n 30 n 0 y n 1 n 1
+;/define/boundary-conditions/copy-bc inlet front ()
+;/define/boundary-conditions/wall lj y motion-bc-moving n n n n 11.11 1 0 0 n n 0 n 0.5
+
+; set solution controls
+;/solve/set/p-v-coupling 21
+;20: SIMPLE
+;21: SIMPLEC
+;22: PISO
+;24: coupled
+;/solve/set/under-relaxation pressure 0.5
+;/solve/set/under-relaxation density 0.8
+;/solve/set/under-relaxation body-force  0.8
+;/solve/set/under-relaxation mom 0.5
+;/solve/set/under-relaxation turb-viscosity 0.6
+;/solve/set/under-relaxation k 0.6
+;/solve/set/under-relaxation epsilon 0.6
+;/solve/set/under-relaxation body-force 0.8 turb-viscosity 0.8 density 0.8
+;/solve/set/discretization-scheme pressure 10 mom 1 k 1 epsilon 1
+
+;set pressure
+;10:standard
+;11:linear
+;12:second order
+;13:body force weighted
+;14:presto!
+
+;set mom
+;0:firdst order upwind
+;1:second order upwind
+;2:power law
+;4:quick
+;6:third-order muscl
+
+;set k
+;0:firdst order upwind
+;1:second order upwind
+;2:power law
+;4:quick
+;6:third-order muscl
+
+;set epdst order upwind
+;1:second order upwind
+;2:power law
+;4:silon
+;0:firquick
+;6:third-order muscl
+
+;set monitor residuals
+/solve/monitors/residual/convergence-criteria 0.000001 0.000001 0.000001 0.000001 0.000001 0.000001
+
+;set force monitors
+;compile C
+;/define/user-defined/compiled-functions/compile libudf yes FandMmonitor.c "" "" 
+; load C
+;/define/user-defined/compiled-functions/load libudf
+;;    set hook
+;/define/user-defined/function-hooks/execute-at-end "force_and_moment_print::libudf" "" 
+
+;/solve/monitors/force/set-drag-monitor cx y che1 zxj1 zxj2 che2 zxj3 zxj4 che3 zxj5 zxj6 () n y "cx-CRH380A" n y 1 0 0
+;/solve/monitors/force/set-drag-monitor cy y che1 zxj1 zxj2 che2 zxj3 zxj4 che3 zxj5 zxj6 () n y "cy-1D-30" n y 0 1 0
+;/solve/monitors/force/set-drag-monitor cz y che1 zxj1 zxj2 che2 zxj3 zxj4 che3 zxj5 zxj6 () n y "cz-CRH380A" n y 0 0 1
+
+;/solve/monitors/force/set-moment-monitor mx y che1 zxj1 zxj2 fd1 che2 zxj3 zxj4 fd2 che3 zxj5 zxj6 () n y "mx-1D-30" n y 0 0 0 1 0 0
+;/solve/monitors/force/set-moment-monitor my y che1 zxj1 zxj2 fd1 che2 zxj3 zxj4 fd2 che3 zxj5 zxj6 () n y "my-1D-30" n y 0 0 0 0 1 0
+;/solve/monitors/force/set-moment-monitor mz y che1 zxj1 zxj2 fd1 che2 zxj3 zxj4 fd2 che3 zxj5 zxj6 () n y "mz-1D-30" n y 0 0 0 0 0 1
+
+
+;init solve set
+/solve/initialize/reference-frame absolute
+/solve/initialize/initialize-flow
+;solve/set/time-step 0.00005
+/solve/iterate 500
+;solve/set/time-step 0.00005
+;solve/set/data-sampling y 1 y y
+;solve/dual-time-iterate 6000 50
+
+; set save
+
+;/file/autosave/root-name "Me_317"
+/file/write-case-data "F:\FangZhen\0712\FluentData_M500_58_1800.cas"
+;/display/save-picture "F:\FangZhen\0712\FluentData_M500_58_1800jpg"
+/exit/close-fluent
+
+;Read case
+/file/read-case F:\FangZhen\basic_Mesh\Model_500.msh
+
+; set save
+;;/file/auto-save/data-frequency 2000
+;;/file/auto-save/case-frequency each-time
+;;/file/autosave/root-name "30du.msh.gz"
+
+;delete mesh interface
+;/define/mesh-interface/delete contact_region
+
+/define/operating-conditions/gravity/y 0 -9.8 0
+
+;scale
+;;/mesh/scale 0.125 0.125 0.125
+
+;general
+
+/define/operating-conditions? y 0.0 -9.8 0.0
+
+/define/models steady? y
+
+;define viscous model
+
+/define/models/viscous/ke-rng? y   ;;swirl?
+/define/models/viscous/rng-swirl-model? yes
+
+
+;/define/models/viscous/ke-rng-swirl-model? y
+;/define/models/viscous/ke-rng/rng-swirl-model? y
+
+
+;/define/models/viscous/ke-realizable? y            
+
+
+; modify boundary-condition types
+
+;/define/boundary-conditions/zone-type contact_region-src wall
+;/define/boundary-conditions/zone-type contact_region-trg wall
+/define/boundary-conditions/zone-type i1 velocity-inlet
+/define/boundary-conditions/zone-type i2 velocity-inlet
+
+/define/boundary-conditions/zone-type o1 pressure-outlet
+/define/boundary-conditions/zone-type p1 pressure-outlet
+/define/boundary-conditions/zone-type p2 pressure-outlet
+
+;set inlet boundary-conditions
+/define/boundary-conditions/velocity-inlet i2  n n y y n 10 n 0 n n y 5 10
+/define/boundary-conditions/velocity-inlet i1  n n y y n 60 n 0 n n y 5 10
+/define/boundary-conditions/pressure-outlet o1  y n -1800 n y n n y 5 10 y n n n
+/define/boundary-conditions/pressure-outlet p1  y n 0 n y n n y 5 10 y n n n 
+/define/boundary-conditions/pressure-outlet p2  y n 0 n y n n y 5 10 y n n n 
+
+;;;;n y y n 0 y n 51.96 n 30 n 0 y n 1 n 1
+;/define/boundary-conditions/copy-bc inlet front ()
+;/define/boundary-conditions/wall lj y motion-bc-moving n n n n 11.11 1 0 0 n n 0 n 0.5
+
+; set solution controls
+;/solve/set/p-v-coupling 21
+;20: SIMPLE
+;21: SIMPLEC
+;22: PISO
+;24: coupled
+;/solve/set/under-relaxation pressure 0.5
+;/solve/set/under-relaxation density 0.8
+;/solve/set/under-relaxation body-force  0.8
+;/solve/set/under-relaxation mom 0.5
+;/solve/set/under-relaxation turb-viscosity 0.6
+;/solve/set/under-relaxation k 0.6
+;/solve/set/under-relaxation epsilon 0.6
+;/solve/set/under-relaxation body-force 0.8 turb-viscosity 0.8 density 0.8
+;/solve/set/discretization-scheme pressure 10 mom 1 k 1 epsilon 1
+
+;set pressure
+;10:standard
+;11:linear
+;12:second order
+;13:body force weighted
+;14:presto!
+
+;set mom
+;0:firdst order upwind
+;1:second order upwind
+;2:power law
+;4:quick
+;6:third-order muscl
+
+;set k
+;0:firdst order upwind
+;1:second order upwind
+;2:power law
+;4:quick
+;6:third-order muscl
+
+;set epdst order upwind
+;1:second order upwind
+;2:power law
+;4:silon
+;0:firquick
+;6:third-order muscl
+
+;set monitor residuals
+/solve/monitors/residual/convergence-criteria 0.000001 0.000001 0.000001 0.000001 0.000001 0.000001
+
+;set force monitors
+;compile C
+;/define/user-defined/compiled-functions/compile libudf yes FandMmonitor.c "" "" 
+; load C
+;/define/user-defined/compiled-functions/load libudf
+;;    set hook
+;/define/user-defined/function-hooks/execute-at-end "force_and_moment_print::libudf" "" 
+
+;/solve/monitors/force/set-drag-monitor cx y che1 zxj1 zxj2 che2 zxj3 zxj4 che3 zxj5 zxj6 () n y "cx-CRH380A" n y 1 0 0
+;/solve/monitors/force/set-drag-monitor cy y che1 zxj1 zxj2 che2 zxj3 zxj4 che3 zxj5 zxj6 () n y "cy-1D-30" n y 0 1 0
+;/solve/monitors/force/set-drag-monitor cz y che1 zxj1 zxj2 che2 zxj3 zxj4 che3 zxj5 zxj6 () n y "cz-CRH380A" n y 0 0 1
+
+;/solve/monitors/force/set-moment-monitor mx y che1 zxj1 zxj2 fd1 che2 zxj3 zxj4 fd2 che3 zxj5 zxj6 () n y "mx-1D-30" n y 0 0 0 1 0 0
+;/solve/monitors/force/set-moment-monitor my y che1 zxj1 zxj2 fd1 che2 zxj3 zxj4 fd2 che3 zxj5 zxj6 () n y "my-1D-30" n y 0 0 0 0 1 0
+;/solve/monitors/force/set-moment-monitor mz y che1 zxj1 zxj2 fd1 che2 zxj3 zxj4 fd2 che3 zxj5 zxj6 () n y "mz-1D-30" n y 0 0 0 0 0 1
+
+
+;init solve set
+/solve/initialize/reference-frame absolute
+/solve/initialize/initialize-flow
+;solve/set/time-step 0.00005
+/solve/iterate 500
+;solve/set/time-step 0.00005
+;solve/set/data-sampling y 1 y y
+;solve/dual-time-iterate 6000 50
+
+; set save
+
+;/file/autosave/root-name "Me_317"
+/file/write-case-data "F:\FangZhen\0712\FluentData_M500_60_1800.cas"
+;/display/save-picture "F:\FangZhen\0712\FluentData_M500_60_1800jpg"
+/exit/close-fluent
+
