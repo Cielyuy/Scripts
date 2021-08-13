@@ -1,55 +1,5 @@
 import shutil, os, sys
 
-def devideSqueue(num, list=[]):
-    # list_Div[][]= None
-    # i = 0
-    shang = len(list) // num
-    yu = len(list) % num
-    list_Div = []
-
-    # for i in range(num):
-    #     list_Div.append([])
-
-    if len(list) <= num:
-        for i in range(len(list)):
-            list_Div.append(list[i])
-
-        print('single squeu')
-        # return list_Div
-    else:
-        # shang = len(list) // (num - 1)
-        # yu = len(list) % (num - 1)
-        k = -1
-        for i in range(0, len(list)):
-            if yu == 0:
-                if i % shang == 0:
-                    list_Div.append([])
-                    k = k + 1
-                    # list_Div.append([])
-                    list_Div[k].append(list[i])
-                else:
-                    list_Div[k].append(list[i])
-
-            elif k < yu & yu != 0:
-                if i % (shang + 1) == 0:
-                    list_Div.append([])
-                    k = k + 1
-                    # list_Div.append([])
-                    list_Div[k].append(list[i])
-                else:
-                    list_Div[k].append(list[i])
-
-
-            elif ((i - yu * (shang + 1)) % shang) == 0:
-                list_Div.append([])
-                k = k + 1
-                list_Div[k].append(list[i])
-            else:
-                list_Div[k].append(list[i])
-
-
-    return list_Div
-
 
 def listGet(a, b, c):
     numList = list()
@@ -72,18 +22,19 @@ def listGet(a, b, c):
     return numList
 
 
+#注意：每一个jou cse文件的地址名称，不仅作为写入文件的地址，同时作为字符串被写入到batch文件中
 # 前缀命名
-VelocityOrPressure = True
+#VelocityOrPressure = False
 
-FirstPara = 0  ##################################
+FirstPara = 2750   ##################################
 
-LastPara = 5000  ##################################
+LastPara = 4500  ##################################
 
-CountNum = 50
+CountNum = 250
 
-Mesh_num_preffix = 'M500_'
+varNum_V = 85
 
-varNum = 85
+varNum_P = -3500
 
 catchList = listGet(FirstPara, LastPara, CountNum)
 
@@ -91,16 +42,44 @@ for j in catchList:
     print(j)
 
 
+#for i in catchList:
+    
+
+
 
 
 absoluteDir = os.getcwd() + "\\"  #############         地址命名    ###############
 Clip_Whole_Dir = os.path.abspath(os.path.dirname(os.getcwd())) + "\\"
 
-Mesh_load_dir_preffix = 'basic_Mesh'+'\\'
-MeshName = 'Model_500.msh'
-Mesh_Load_Dir = Clip_Whole_Dir+Mesh_load_dir_preffix + MeshName
 
-Specified_Dir = "0712" + '\\'  ###############指定储存复制文件的特定文佳夹
+
+
+Specified_Dir_preffix_1 = "task"+"\\" +"0720" + "\\"  ###########!!!!!!!!!!
+Specified_Dir_preffix_2 = 'V' + '_'  ###########!!!!!!!!!!!
+#Specified_Dir = Specified_Dir_preffix_1 + Specified_Dir_preffix_2 + str(count_Total_Clip_Number) + '/'
+Specified_Dir = Specified_Dir_preffix_1 + Specified_Dir_preffix_2+str(varNum_V)+ '\\'  ###############指定储存复制文件的特定文佳夹
+
+if os.path.exists(Clip_Whole_Dir+Specified_Dir):
+    pass
+else:
+    os.makedirs(Clip_Whole_Dir+Specified_Dir)
+
+# 清除原先有的bat文件
+print(os.getcwd())
+#for files in os.listdir(os.getcwd()):
+for files in os.listdir(Clip_Whole_Dir+Specified_Dir):
+    if files.endswith(".bat"):
+        os.remove(os.path.join(Clip_Whole_Dir+Specified_Dir, files))
+
+for files in os.listdir(Clip_Whole_Dir+Specified_Dir):
+    if files.endswith(".jou"):
+        os.remove(os.path.join(Clip_Whole_Dir+Specified_Dir, files))
+
+for files in os.listdir(Clip_Whole_Dir+Specified_Dir):
+    if files.endswith(".cse"):
+        os.remove(os.path.join(Clip_Whole_Dir+Specified_Dir, files))
+
+
 
 Stored_Example_J_Name = 'Example_J.jou'
 Stored_Example_J_middle_dir = 'basic_Mesh' + '\\'
@@ -110,33 +89,30 @@ Stored_Example_C_Name = 'Example_C.cse'
 Stored_Example_C_middle_dir = 'basic_Mesh' + '\\'
 Stored_Example_C_Dir = Clip_Whole_Dir + Stored_Example_C_middle_dir + Stored_Example_C_Name
 
-B_J_middle_name_preffix = 'J_' + Mesh_num_preffix + str(varNum) + '_'
-B_C_middle_name_preffix = 'C_' + Mesh_num_preffix + str(varNum) + '_'
+
+Mesh_num_preffix = 'M100_'#对mesh文件网格数量方面的描述
+Mesh_load_dir_preffix = 'basic_Mesh'+'\\'  #存储地址
+for i in catchList:
+    
+    MeshName_Preffix = 'M0720_Jin-kuan-8-2500_xiaDi-'+str(i)
+    MeshName = MeshName_Preffix+'.msh'
+    Mesh_Load_Dir = Clip_Whole_Dir+Mesh_load_dir_preffix + MeshName
+
+    B_J_middle_name_preffix = 'J_' + Mesh_num_preffix + MeshName_Preffix + '_'
+    B_C_middle_name_preffix = 'C_' + Mesh_num_preffix + MeshName_Preffix + '_'
 
 
-B_J_Content_Preffix = 'call fluent 3ddp -t32 -g -wait -i '
-B_C_Content_Preffix = "call cfdpost -batch "
+    B_J_Content_Preffix = 'call fluent 3ddp -t8 -g -wait -i '
+    B_C_Content_Preffix = "call cfdpost -batch "
 
-# bat文件 和 cse文件
-B_J_Name = 'BF_' + Mesh_num_preffix + str(FirstPara) + "_" + str(varNum) + ".bat"
-B_J_Dir = Clip_Whole_Dir + Specified_Dir + B_J_Name
-B_C_Name = 'BP_' + Mesh_num_preffix + str(FirstPara) + "_" + str(varNum) + ".bat"
-B_C_Dir = Clip_Whole_Dir + Specified_Dir + B_C_Name
+    # bat文件 和 cse文件
+    B_J_Name = 'BF_' + Mesh_num_preffix + str(varNum_P) + "_" + str(varNum_V) + "_"+ MeshName_Preffix + ".bat"
+    B_J_Dir = Clip_Whole_Dir + Specified_Dir + B_J_Name
+    B_C_Name = 'BP_' + Mesh_num_preffix + str(varNum_P) + "_" + str(varNum_V) + "_"+MeshName_Preffix + ".bat"
+    B_C_Dir = Clip_Whole_Dir + Specified_Dir + B_C_Name
 
-
-
-
-
-
-# 清除原先有的bat文件
-print(os.getcwd())
-#for files in os.listdir(os.getcwd()):
-for files in os.listdir(Clip_Whole_Dir+Specified_Dir):
-    if files.endswith(".bat"):
-        os.remove(os.path.join(Clip_Whole_Dir+Specified_Dir, files))
-
-# 命名更改 复制
-for k in catchList:
+    # 命名更改 复制
+    #for k in catchList:
     B_J_Middle_Name = B_J_middle_name_preffix + str(k) + ".jou"
     B_J_Exported_Dir = Clip_Whole_Dir + Specified_Dir + B_J_Middle_Name  #####################命名jou等中间文件名称
     B_C_Middle_Name = B_C_middle_name_preffix + str(k) + ".cse"
@@ -172,12 +148,12 @@ for k in catchList:
     # C_replace_str_ls = [cfdpostDataName + ".jpg", FluentDataName + '.dat']  #################
     #########################################################################
     #############################################################################
-    FluentDataName = 'FluentData_' + str(Mesh_num_preffix) + str(k) + "_" + str(varNum)
-    cfdpostDataName = "CP_" + str(Mesh_num_preffix) + str(k) + '_' + str(varNum)
+    FluentDataName = 'FluentData_' + Mesh_num_preffix + str(varNum_P)+ '_' + str(varNum_V) + '_' + MeshName_Preffix
+    cfdpostDataName = "CP_" + Mesh_num_preffix + str(varNum_P) + '_'+ str(varNum_V) + '_' + MeshName_Preffix
 
-    C_Previous_Stored_Dat = "D:\ZTC\0707\V85\FluentData_M317__-20_85.dat"
+    C_Previous_Stored_Dat ="D:\\ZTC\\0707\\V85\\FluentData_M317__-20_85.dat"
     C_Now_Dat = Clip_Whole_Dir+Specified_Dir + FluentDataName + '.dat'
-    C_Previous_Stored_Pic = "P_317_80_1800.jpg"
+    C_Previous_Stored_Pic = "D:\\ZTC\\0707\\V85\\CP_M317__-20_85.jpg"
     C_Now_Pic = Clip_Whole_Dir+Specified_Dir + cfdpostDataName + ".jpg"
 
     C_find_str_ls = [C_Previous_Stored_Pic, C_Previous_Stored_Dat]  ##################更换匹配字符
@@ -189,23 +165,30 @@ for k in catchList:
     J_Now_Cas =Clip_Whole_Dir+Specified_Dir + FluentDataName + '.cas'
     J_Previous_Stored_Pic = 'FluentData_M317__52_1800jpg'
     J_Now_Pic = Clip_Whole_Dir+Specified_Dir + FluentDataName + 'jpg'
+    
     J_Previous_Velocity = 'velocity-inlet i1  n n y y n 52'
-    J_Now_Velocity = 'velocity-inlet i1  n n y y n ' + str(k)
+    J_Now_Velocity = 'velocity-inlet i1  n n y y n ' + str(varNum_V)
+    #J_Now_Velocity_varNum = 'velocity-inlet i1  n n y y n ' + str(varNum_V)
+    
     J_Previous_Pressure = 'pressure-outlet o1  y n -1800'
-    J_Now_Pressurue = 'pressure-outlet o1  y n ' + str(k)
-    if VelocityOrPressure:
-        J_Previous_Var = J_Previous_Velocity
-        J_Now_Var = J_Now_Velocity
-    else:
-        J_Previous_Var = J_Previous_Pressure
-        J_Now_Var = J_Now_Pressurue
+    J_Now_Pressurue = 'pressure-outlet o1  y n ' + str(varNum_P)
+    #J_Now_Pressurue_varNum = 'pressure-outlet o1  y n ' + str(varNum_V)
+    # if VelocityOrPressure:
+    #     J_Previous_Var = J_Previous_Velocity
+    #     J_Now_Var = J_Now_Velocity
+    #     J_Previous_varNum = J_Previous_Pressure
+    #     J_Now_varNum = J_Now_Pressurue_varNum    
+    # else:
+    #     J_Previous_Var = J_Previous_Pressure
+    #     J_Now_Var = J_Now_Pressurue
+    #     J_Previous_varNum = J_Previous_Velocity
+    #     J_Now_varNum = J_Now_Velocity_varNum
 
-    J_find_str_ls = [J_Previous_Stored_Mesh, J_Previous_Stored_Cas, J_Previous_Stored_Pic,J_Previous_Var]  ##################更换匹配字符
-    J_replace_str_ls = [J_Now_mesh, J_Now_Cas, J_Now_Pic, J_Now_Var]  ##################
+    J_find_str_ls = [J_Previous_Stored_Mesh, J_Previous_Stored_Cas, J_Previous_Stored_Pic,J_Previous_Velocity,J_Previous_Pressure]  ##################更换匹配字符
+    J_replace_str_ls = [J_Now_mesh, J_Now_Cas, J_Now_Pic, J_Now_Velocity,J_Now_Pressurue]  ##################
 
     #########################################################################
     ###########################################################################
-    
 
     for line in f_c:
         # print(line)
