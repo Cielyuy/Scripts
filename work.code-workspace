@@ -4,9 +4,6 @@
 			"path": "c:\\Users\\48231\\Desktop\\demo"
 		},
 		{
-			"path": "F:\\FangZhen\\Script"
-		},
-		{
 			"name": "Lc",
 			"path": "E:\\Lc"
 		},
@@ -18,6 +15,9 @@
 		},
 		{
 			"path": "C:\\Users\\48231\\Desktop\\pythonPratice"
+		},
+		{
+			"path": "."
 		}
 	],
 	"settings": {}
