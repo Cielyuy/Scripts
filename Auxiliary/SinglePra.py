@@ -54,7 +54,7 @@ df.to_excel(excelDir,index = False)
 
 plt.figure(spcifiedObj)
 plt.title(spcifiedObj)
-df.columns[1] = df.columns[1].apply(lambda x:round(float(x),2))##保留两位小数
+df[df.columns[1]] = df[df.columns[1]].apply(lambda x:round(float(x),2))##保留两位小数
 plt.plot(df[df.columns[0]],df[df.columns[1]])
 
 plt.xlabel('perssure')
