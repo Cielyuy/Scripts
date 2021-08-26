@@ -1,4 +1,4 @@
-import shutil, os, sys
+import shutil, os, sys,re
 
 
 def listGet(a, b, c):
@@ -21,7 +21,7 @@ def listGet(a, b, c):
 
     return numList
 
-
+# re_txtStored = re.compile(r'\"\S*txt\"')
 # 前缀命名
 VelocityOrPressure = False
 
@@ -51,10 +51,13 @@ Specified_Dir_preffix_1 ="task" + '\\'+ "0819_1" + '\\'  ###########!!!!!!!!!!
 Specified_Dir_preffix_2 = 'P' + '_'  ###########!!!!!!!!!!!
 #Specified_Dir = Specified_Dir_preffix_1 + Specified_Dir_preffix_2 + str(count_Total_Clip_Number) + '/'
 Specified_Dir = Specified_Dir_preffix_1 + Specified_Dir_preffix_2+str(varNum)+ '\\'  ###############指定储存复制文件的特定文佳夹
-if os.path.exists(Clip_Whole_Dir+Specified_Dir):
+##存储监测数据txt格式的文本文件的文件夹
+txtDataStoredClipName = 'txtData'+'\\'
+txtDataStoredClipDir = Clip_Whole_Dir+Specified_Dir+txtDataStoredClipName  ##存储txt文件的路径
+if os.path.exists(txtDataStoredClipDir):
     pass
 else:
-    os.makedirs(Clip_Whole_Dir+Specified_Dir)
+    os.makedirs(Clip_Whole_Dir+Specified_Dir+txtDataStoredClipDir)
 
 Stored_Example_J_Name = 'Example_steady_J_0819.jou'
 Stored_Example_J_middle_dir = 'basic_Mesh' + '\\'
@@ -153,6 +156,11 @@ for k in catchList:
     J_Previous_Stored_Pic = 'FluentData_M317__52_1800jpg'
     J_Now_Pic = Clip_Whole_Dir+Specified_Dir + FluentDataName + 'jpg'
     
+    ##改变监测点文件的输出位置：
+    
+
+    #####
+    #####变化的量
     J_Previous_Velocity = 'velocity-inlet i1  n n y y n 52'
     J_Now_Velocity = 'velocity-inlet i1  n n y y n ' + str(k)
     J_Now_Velocity_varNum = 'velocity-inlet i1  n n y y n ' + str(varNum)
@@ -211,6 +219,8 @@ for k in catchList:
         # print(len(J_find_str_ls))
         while m < len(J_find_str_ls):
             line = line.replace(J_find_str_ls[m], J_replace_str_ls[m])
+
+            turn2AbsPath(line,txtDataStoredClipDir,str(k))
             m = m + 1
             # print(line)
 
@@ -241,5 +251,8 @@ for line in b_c_f:
 b_j_f.close()
 b_c_f.close()
 comFile.close()
+##把py文件复制过去，并调用
+pyPath = os.path.join(txtDataStoredClipDir,SinglePra.py) 
+shutil.copyfile('./Auxiliary/SinglePra.py',pyPath)
 os.system(Clip_Whole_Dir+Specified_Dir +"B_comFile.bat")##调用系统程序
-
+os.system(pyPath)
