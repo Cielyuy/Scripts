@@ -14,6 +14,12 @@
 		},
 		{
 			"path": "..\\basic_Mesh"
+		},
+		{
+			"path": "..\\resourceData"
+		},
+		{
+			"path": "..\\LinuxSript"
 		}
 	],
 	"settings": {}
