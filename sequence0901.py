@@ -89,9 +89,11 @@ B_C_Content_Preffix = "call cfdpost -batch "
 
 # bat文件 和 cse文件
 B_J_Name = 'BF_' + Mesh_num_preffix + str(FirstPara) + "_" + str(varNum) + ".bat"
-B_J_Dir = Clip_Whole_Dir + Specified_Dir + B_J_Name
+##B_J_Dir = Clip_Whole_Dir + Specified_Dir + B_J_Name
+B_J_Dir = os.path.join(Clip_Whole_Dir,Specified_Dir,B_J_Name)
 B_C_Name = 'BP_' + Mesh_num_preffix + str(FirstPara) + "_" + str(varNum) + ".bat"
-B_C_Dir = Clip_Whole_Dir + Specified_Dir + B_C_Name
+##B_C_Dir = Clip_Whole_Dir + Specified_Dir + B_C_Name
+B_C_Dir = os.path.join(Clip_Whole_Dir,Specified_Dir,B_C_Name)
 
 
 
@@ -101,17 +103,17 @@ B_C_Dir = Clip_Whole_Dir + Specified_Dir + B_C_Name
 # 清除原先有的bat文件
 print(os.getcwd())
 #for files in os.listdir(os.getcwd()):
-for files in os.listdir(Clip_Whole_Dir+Specified_Dir):
+for files in os.listdir(os.path.join(Clip_Whole_Dir,Specified_Dir)):
     if files.endswith(".bat"):
-        os.remove(os.path.join(Clip_Whole_Dir+Specified_Dir, files))
+        os.remove(os.path.join(Clip_Whole_Dir,Specified_Dir, files))
 
-for files in os.listdir(Clip_Whole_Dir+Specified_Dir):
+for files in os.listdir(os.path.join(Clip_Whole_Dir,Specified_Dir)):
     if files.endswith(".jou"):
-        os.remove(os.path.join(Clip_Whole_Dir+Specified_Dir, files))
+        os.remove(os.path.join(Clip_Whole_Dir,Specified_Dir, files))
 
-for files in os.listdir(Clip_Whole_Dir+Specified_Dir):
+for files in os.listdir(os.path.join(Clip_Whole_Dir,Specified_Dir)):
     if files.endswith(".cse"):
-        os.remove(os.path.join(Clip_Whole_Dir+Specified_Dir, files))
+        os.remove(os.path.join(Clip_Whole_Dir,Specified_Dir, files))
 
 
 # 命名更改 复制
